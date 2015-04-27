@@ -1,0 +1,117 @@
+;;This file is part of the Modalizing Mechanisms model.
+;;
+;;the Modalizing Mechanisms model is free software: you can redistribute it and/or modify
+;;it under the terms of the GNU General Public License as published by
+;;the Free Software Foundation, either version 3 of the License, or
+;;(at your option) any later version.
+;;
+;;the Modalizing Mechanisms model is distributed in the hope that it will be useful,
+;;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;GNU General Public License for more details.
+;;
+;;You should have received a copy of the GNU General Public License
+;;along with the Modalizing Mechanisms model.  If not, see <http://www.gnu.org/licenses/>.
+
+
+to initialize-utils
+  set should-stop false
+  set old-number-of-hunters 0
+  set hunters-list []
+  set states 3
+  set acts 3
+  set hunter-pure-strats extended-identity states acts
+end
+
+to-report proportion-type [ thismonstertype ]
+  let theseguys count monsters with [ monstertype = thismonstertype ]
+  let total count monsters
+  report precision (theseguys / total) 2
+end
+
+
+to-report extended-identity [rows columns]
+  let zero matrix:make-constant rows columns 0
+  foreach (n-values min list rows columns [?]) [ matrix:set zero ? ? 1 ]
+  report zero
+end
+
+to-report random-hunter-pure-strat
+  let rsps matrix:make-constant states acts 0
+  foreach (n-values states [?]) [
+    matrix:set-row rsps ? (matrix:get-row hunter-pure-strats
+                           (random item 1 matrix:dimensions hunter-pure-strats))
+  ]
+  report rsps
+end
+
+to-report random-hunter-strat
+  let rss matrix:make-constant states acts 0
+  foreach (n-values states [?]) [
+    matrix:set-row rss ? 
+      (normalize n-values acts [ random-float 1 ])
+  ]
+  report rss
+end
+
+to-report random-hunter-investment-policy
+  let airinv random-float 1
+  report list airinv (1 - airinv)
+end
+
+to-report investment-to-payoff [investment]
+  report investment-to-payoff-inv-exp investment
+end
+
+to-report investment-to-payoff-inv-exp [investment]
+  report 20 - 10 / (exp (2 * investment))
+end
+
+to-report investment-to-payoff-linear [investment]
+  report 10 + investment * (8.646647167633873) ;; that's investment-to-payoff-inv-exp(1) - 10
+end
+
+to-report perturb-vector [proportion vector]
+  let vectorsize length vector
+  ;let perturbation n-values vectorsize [random-float 1]
+  let zerolist n-values vectorsize [ 0 ]
+  let perturbation replace-item random vectorsize zerolist 1
+  let perturbed (map [?1 * proportion + ?2] perturbation vector)
+  report normalize perturbed
+end
+
+to-report perturb-matrix [proportion matrix]
+  let rowlist matrix:to-row-list matrix
+  let perturbed (map [perturb-vector proportion ?] rowlist)
+  report matrix:from-row-list perturbed
+end
+
+to-report normalize [probvector]
+  let vectorsum reduce + probvector
+  report map [? / vectorsum] probvector
+end
+
+to-report weighted-random-choice [probvector]
+  let randomindex -1
+  let randomnumber random-float 1
+  let i 0
+  while [i < length probvector] [
+    set randomnumber randomnumber - item i probVector
+    if randomnumber <= 0 [
+      set randomindex i
+      set i length probvector + 1
+      ]
+    set i i + 1
+  ]
+  report randomIndex
+end
+
+to-report matrix-mean [matrix-list]
+  let matrixsum reduce [ matrix:plus ?1 ?2 ] matrix-list
+  let matrixmean matrix:times-scalar matrixsum (1 / length matrix-list)
+  report matrixmean
+end
+
+to-report mean-hunter-strat
+  report matrix:to-row-list matrix-mean [ strategy ] of hunters
+end
