@@ -592,6 +592,8 @@ The paper, and the model as it is set up, assume exponentially diminishing retur
 
 You will see that hunters simply resort to a step function, investing everything in the eventuality of an air attack whenever prob-air > 0.5.
 
+The for-paper BehaviorSpace experiment should provide you with a set of data very similar to the one depicted in Figure 3 of the paper referred to above.
+
 ## EXTENDING THE MODEL
 
 It would be interesting to see what happens if hunters had to deal with monsters evolving to n varieties, for n > 2.
