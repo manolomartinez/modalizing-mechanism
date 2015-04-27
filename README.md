@@ -12,3 +12,6 @@ open `modalizing-mechanisms.nlogo` with
 
 Please refer to the info tab of the model and to the related paper for
 explanation of what it attempts to show.
+
+I'll try to keep an up-to-date copy of this model over at [Modeling
+Commons](http://www.modelingcommons.org/browse/one_model/4306).
